@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>LazyCouchDB.js - Example</title>
+		<script src="lazycouchdb.js"></script>
+	</head>
+	<body>
+		<h1>LazyCouchDB.js - Example</h1>
+		<hr>
+		<h3>bulkWrite():</h3>
+		<pre id="output1"></pre>
+		<hr>
+		<h3>getAllDocuments():</h3>
+		<pre id="output2"></pre>
+		<hr>
+		<h3>find():</h3>
+		<pre id="output3"></pre>
+		<hr>
+		<b>NOTE:</b> every query is asynchronous, reload the page and see for yourself!</b>
+	</body>
+
+	<script>
+		const lcdb = new LazyCouchDB("http://localhost:5984", "admin", "secret");
+		const database = "testdb";
+		let result = null;
+		
+		const searchObject = {
+			"selector": {
+				"address": "The Shire"
+			},
+			"fields": ["_id", "_rev", "name"]
+		};
+
+		const newDocuments = {
+			"docs": [
+				{
+					"name": "Bilbo",
+					"address": "The Shire"
+				},
+				{
+					"name": "Sauron",
+					"address": "Mordor"
+				},
+				{
+					"name": "Aragorn",
+					"address": "Minas Tirith"
+				},
+				{
+					"_id": "123",
+					"name": "Frodo",
+					"address": "The Shire"
+				}
+			]
+		};
+
+		(async => {
+			// bulk write
+			result = lcdb.bulkWrite(database, newDocuments);
+			result.then((json) => {
+				document.getElementById("output1").innerText = JSON.stringify(json, undefined, 2);
+			});
+
+			// all documents
+			result = lcdb.getAllDocuments(database);
+			result.then((json) => {
+				document.getElementById("output2").innerText = JSON.stringify(json, undefined, 2);
+			});
+
+			// find
+			result = lcdb.find(database, searchObject);
+			result.then((json) => {
+				document.getElementById("output3").innerText = JSON.stringify(json, undefined, 2);
+			});
+		})();
+	</script>
+
+</html>
